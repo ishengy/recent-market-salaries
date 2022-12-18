@@ -12,6 +12,7 @@ import pandas as pd
 import re
 import time
 import numpy as np
+import scipy.stats as stats
 
 
 class linkedin_job_search(Linkedin):
@@ -57,9 +58,14 @@ class linkedin_job_search(Linkedin):
 
         return job_desc_list
 
-    def extract_salaries(self, job_desc_list):
+    def extract_salaries(self, job_desc_list, exempt=True):
         salaries = [self.find_salary(job_text) for job_text in job_desc_list if len(self.find_salary(job_text)) > 0]
-        return pd.Series(self.flatten(salaries), name = 'salaries')
+        flattened_salaries = pd.Series(self.flatten(salaries), name = 'salaries')
+
+        if exempt:
+            flattened_salaries = flattened_salaries[flattened_salaries >= 58500]
+
+        return flattened_salaries
 
     def bootstrap_resample(self, arr):
         resampled_means = pd.Series([arr.sample(3).mean() for i in range(0,1000)], name = 'salaries')
