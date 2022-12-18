@@ -40,6 +40,6 @@ class col_adjustments:
         else:
             col = "Cost of Living Index"
 
-        col_city_index = city_row[col].values[0]
+        col_city_index = city_row[col].values[0]/100
 
         return col_city_index
