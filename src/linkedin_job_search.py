@@ -22,15 +22,25 @@ class linkedin_job_search(Linkedin):
     def flatten(self, big_list):
         return [int(item.replace("$","").replace(",","")) for sublist in big_list for item in sublist]
 
-    def tukeys_fences(self, arr):
-        q1 = np.quantile(arr, 0.25)
-        q3 = np.quantile(arr, 0.75)
-        iqr = q3 - q1
+    def outlier_removal(self, arr, how='tukey'):
+        if how == 'tukey':
+            q1 = np.quantile(arr, 0.25)
+            q3 = np.quantile(arr, 0.75)
+            iqr = q3 - q1
 
-        upper_bound = q3+(1.5*iqr)
-        lower_bound = q1-(1.5*iqr)
+            upper_bound = q3+(1.5*iqr)
+            lower_bound = q1-(1.5*iqr)
 
-        return arr[(arr >= lower_bound) & (arr <= upper_bound)]
+            removed = arr[(arr >= lower_bound) & (arr <= upper_bound)]
+        elif how == 'z-score':
+            mean, std = np.mean(arr), np.std(arr)
+            z_score = np.abs((arr - mean) / std)
+            removed = arr[z_score < 2]
+        elif how == 'modified-z':
+            mad = abs(arr - arr.median()).sum()/len(arr)
+            m = 0.6745 * (arr - np.median(arr)) / mad
+            removed = arr[abs(m) < 3.5]
+        return removed
 
     def get_linkedin_job_desc(self, job_searches):
         job_desc_list = []
@@ -78,7 +88,7 @@ class linkedin_job_search(Linkedin):
         job_desc_list = self.get_linkedin_job_desc(job_searches)
         flattened_salaries = self.extract_salaries(job_desc_list)
 
-        salaries_no_outliers = self.tukeys_fences(flattened_salaries)
+        salaries_no_outliers = self.outlier_removal(flattened_salaries, how='tukey')
         salaries_no_outliers.plot.hist(alpha=0.5)
 
         # if normal, maybe just grab mean+std and build out normal distribution.
