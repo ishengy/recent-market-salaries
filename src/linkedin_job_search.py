@@ -56,6 +56,13 @@ class linkedin_job_search(Linkedin):
         bootstrapped_salaries = arr.append(resampled_means,ignore_index = True)
         return bootstrapped_salaries
 
+    def test_normality(self, observed_data, alpha = 1e-3):
+        chi_square_test_statistic, p_value = stats.normaltest(observed_data)
+        if p_value < alpha:  # null hypothesis: x comes from a normal distribution
+            print("The null hypothesis can be rejected")
+        else:
+            print("The null hypothesis cannot be rejected")
+
     def build_distribution(self, job_title_code, days, bootstrap=True, update_table=False, col_adj_city='New York, NY, United States', col_with_rent=True):
 
         # GET a profile
@@ -73,6 +80,10 @@ class linkedin_job_search(Linkedin):
 
         salaries_no_outliers = self.tukeys_fences(flattened_salaries)
         salaries_no_outliers.plot.hist(alpha=0.5)
+
+        # if normal, maybe just grab mean+std and build out normal distribution.
+        # if not, bootstrap?
+        self.test_normality(salaries_no_outliers)
 
         if bootstrap:
             resampled_means = self.bootstrap_resample(salaries_no_outliers)
