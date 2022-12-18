@@ -7,6 +7,7 @@ Created on Sat Dec 17 02:17:06 2022
 """
 
 from linkedin_api import Linkedin
+import col_adjustments as ca
 import pandas as pd
 import re
 import time
@@ -54,3 +55,36 @@ class linkedin_job_search(Linkedin):
         resampled_means = pd.Series([arr.sample(3).mean() for i in range(0,1000)], name = 'salaries')
         bootstrapped_salaries = arr.append(resampled_means,ignore_index = True)
         return bootstrapped_salaries
+
+    def build_distribution(self, job_title_code, days, bootstrap=True, update_table=False, col_adj_city='New York, NY, United States', col_with_rent=True):
+
+        # GET a profile
+        job_searches = self.search_jobs(
+            job_title = [job_title_code],
+            job_type=['F'],
+            location_name = 'New York City Metropolitan Area',
+            listed_at = 24 * 60 * 60 * days,
+        )
+        num_jobs = len(job_searches)
+        print(num_jobs, "jobs found. Approximately", num_jobs*3.5, "seconds to extract job descriptions.")
+
+        job_desc_list = self.get_linkedin_job_desc(job_searches)
+        flattened_salaries = self.extract_salaries(job_desc_list)
+
+        salaries_no_outliers = self.tukeys_fences(flattened_salaries)
+        salaries_no_outliers.plot.hist(alpha=0.5)
+
+        if bootstrap:
+            resampled_means = self.bootstrap_resample(salaries_no_outliers)
+            salaries_no_outliers = salaries_no_outliers.append(resampled_means,ignore_index = True)
+
+        if col_adj_city != 'New York, NY, United States':
+            col_table = ca.col_adjustments()
+            if update_table:
+                col_table.update_COL_table()
+            adj_factor = col_table.calc_COL_adjustment(city=col_adj_city, rent=col_with_rent)
+            salaries_no_outliers *= adj_factor
+
+        salaries_no_outliers.plot.hist(alpha=0.5, title = 'Salary Distribution (Source: LinkedIn)')
+
+        return True
