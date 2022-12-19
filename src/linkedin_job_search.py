@@ -82,6 +82,7 @@ class linkedin_job_search(Linkedin):
     def build_distribution(self, job_title_code, days, bootstrap=True, update_table=False, col_adj_city='New York, NY, United States', col_with_rent=True):
 
         # GET a profile
+        print('Gathering Job Postings')
         job_searches = self.search_jobs(
             job_title = [job_title_code],
             job_type=['F'],
@@ -102,6 +103,7 @@ class linkedin_job_search(Linkedin):
         self.test_normality(salaries_no_outliers)
 
         if bootstrap:
+            print('Bootstrapping')
             try:
                 resampled_means = self.bootstrap_resample(salaries_no_outliers)
                 salaries_no_outliers = salaries_no_outliers.append(resampled_means,ignore_index = True)
@@ -111,10 +113,13 @@ class linkedin_job_search(Linkedin):
         if col_adj_city != 'New York, NY, United States':
             col_table = ca.col_adjustments()
             if update_table:
+                print('Updating Table')
                 col_table.update_COL_table()
+            print('Adjusting for COL')
             adj_factor = col_table.calc_COL_adjustment(city=col_adj_city, rent=col_with_rent)
             salaries_no_outliers *= adj_factor
 
+        print('Creating Visuals')
         salaries_no_outliers.plot.hist(alpha=0.5, title = 'Salary Distribution (Source: LinkedIn)')
 
         return True
