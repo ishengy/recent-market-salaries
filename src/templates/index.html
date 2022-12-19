@@ -1,0 +1,26 @@
+<h1>Salary Transparency Project</h1>
+<form id = "myForm" action="/get_plot" method="POST">
+    Job Title Code: <input type="text" name = "job_title_code" required/></br>
+    <br>
+    Location: <input type="text" name = "geo_loc" required/></br>
+    <br>
+    Current Salary: <input type="number" name = "curr_salary" required/></br>
+    <br>
+    
+    <input type="submit" value = OK />
+    <input type="button" onclick="reset()" value="Reset">
+    <br>
+</form>
+
+<script>
+    function reset() {
+      document.getElementById("myForm").reset();
+    }
+    </script>
+<br>
+
+{% if plot_url %}
+    <img src= {{plot_url}} alt = "Chart cannot be displayed">
+{% endif %}
+
+<p>The line chart is plotted based on the following data: </p>
