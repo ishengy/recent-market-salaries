@@ -79,7 +79,7 @@ class linkedin_job_search(Linkedin):
         else:
             print("The null hypothesis cannot be rejected")
 
-    def build_distribution(self, job_title_code, days, bootstrap=True, update_table=False, col_adj_city='New York, NY, United States', col_with_rent=True):
+    def build_distribution(self, job_title_code, days, use_normal=False, bootstrap=True, update_table=False, col_adj_city='New York, NY, United States', col_with_rent=True):
 
         # GET a profile
         print('Gathering Job Postings')
@@ -95,12 +95,12 @@ class linkedin_job_search(Linkedin):
         job_desc_list = self.get_linkedin_job_desc(job_searches)
         flattened_salaries = self.extract_salaries(job_desc_list)
 
-        salaries_no_outliers = self.outlier_removal(flattened_salaries, how='tukey')
-        salaries_no_outliers.plot.hist(alpha=0.5)
-
         # if normal, maybe just grab mean+std and build out normal distribution.
         # if not, bootstrap?
-        self.test_normality(salaries_no_outliers)
+        # self.test_normality(flattened_salaries)
+
+        salaries_no_outliers = self.outlier_removal(flattened_salaries, how='tukey')
+        salaries_no_outliers.plot.hist(alpha=0.5)
 
         if bootstrap:
             print('Bootstrapping')
