@@ -20,7 +20,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
-
+app.config['TEMPLATES_AUTO_RELOAD'] = True
+app.config['TESTING'] = True
 
 @app.route('/')
 def hello():
@@ -44,11 +45,25 @@ def get_plot():
 
         mu = data_row.avg.values[0]
         sigma = data_row.std_dev.values[0]
+        percentile = stats.norm(mu, sigma).cdf(int(curr_salary))
+        z = stats.norm.ppf(percentile)
 
         x = np.linspace(mu - 3*sigma, mu + 3*sigma, 100)
         plt.plot(x, stats.norm.pdf(x, mu, sigma))
-        plt.savefig('static/my_plot.png')
-        return render_template('index.html', get_plot = True, plot_url = 'static/my_plot.png')
+
+        fill_x = np.arange(x[0], int(curr_salary), 10)
+        fill_y = stats.norm.pdf(fill_x, mu, sigma)
+
+        plt.fill_between(fill_x, fill_y, color='r')
+        plt.savefig('static/my_plot1.png')
+        plt.close()
+
+        output_mean = ('The mean salary is $' + str(mu))
+        output_std = ('The standard deviation is $' + str(sigma))
+        output_compare = ('This means that your salary falls in the ' + str(round(percentile*100, 2)) + 'th percentile.')
+        # browser caching issues. idea to fix: append an incrementer like my_plot4.png. delete previous incremented file, increment counter, create new my_plot5.png file.
+        # or ... plotly?
+        return render_template('index.html', get_plot = True, plot_url = 'static/my_plot1.png', output_mean=output_mean, output_std=output_std, output_compare=output_compare)
     else:
         return render_template('index.html')
 
