@@ -14,7 +14,7 @@ from flask import request
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.stats as stats
-import math
+from math import ceil
 import pandas as pd
 from dotenv import load_dotenv
 load_dotenv()
@@ -73,7 +73,7 @@ def get_plot():
 
         output_mean = ('The mean salary is $' + str(mu))
         output_std = ('The standard deviation is $' + str(sigma))
-        output_compare = ('This means that your salary falls in the ' + str(round(percentile*100, 2)) + 'th percentile.')
+        output_compare = ('This means that your salary falls in the ' + str(ceil(percentile*100)) + 'th percentile.')
         return render_template('index.html', get_plot = True, plot_url = 'static/my_plot.png', output_mean=output_mean, output_std=output_std, output_compare=output_compare)
     else:
         return render_template('index.html')
