@@ -74,8 +74,6 @@ def get_plot():
         output_mean = ('The mean salary is $' + str(mu))
         output_std = ('The standard deviation is $' + str(sigma))
         output_compare = ('This means that your salary falls in the ' + str(round(percentile*100, 2)) + 'th percentile.')
-        # browser caching issues. idea to fix: append an incrementer like my_plot4.png. delete previous incremented file, increment counter, create new my_plot5.png file.
-        # or ... plotly?
         return render_template('index.html', get_plot = True, plot_url = 'static/my_plot.png', output_mean=output_mean, output_std=output_std, output_compare=output_compare)
     else:
         return render_template('index.html')
