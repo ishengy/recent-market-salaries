@@ -102,8 +102,11 @@ class linkedin_job_search(Linkedin):
         self.test_normality(salaries_no_outliers)
 
         if bootstrap:
-            resampled_means = self.bootstrap_resample(salaries_no_outliers)
-            salaries_no_outliers = salaries_no_outliers.append(resampled_means,ignore_index = True)
+            try:
+                resampled_means = self.bootstrap_resample(salaries_no_outliers)
+                salaries_no_outliers = salaries_no_outliers.append(resampled_means,ignore_index = True)
+            except ValueError:
+                print('Not enough salaries to initiate bootstrap. Try increasing the number of days.')
 
         if col_adj_city != 'New York, NY, United States':
             col_table = ca.col_adjustments()
