@@ -15,13 +15,13 @@ load_dotenv()
 email = os.environ.get('email')
 password = os.environ.get('password')
 api = ljs.linkedin_job_search(email, password)
-#test = api.build_distribution(job_title_code='25190', days=1)
 
 # GET a profile
-days = 5
+days = 2
 job_searches = api.search_jobs(
-    job_title= ['1422'], #Senior DS: 25887,
+    job_title= ['86'], #Senior DS: 25887,
     job_type=['F'],
+    experience=['3', '4'],
     location_name = 'New York City Metropolitan Area',
     listed_at = 24 * 60 * 60 * days,
 )
