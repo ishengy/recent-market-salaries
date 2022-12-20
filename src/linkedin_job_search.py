@@ -67,6 +67,10 @@ class linkedin_job_search(Linkedin):
 
         return flattened_salaries
 
+    def extract_job_title(self, job_searches):
+        job_title_list = [str.lower(jd['title']) for jd in job_searches]
+        return max(set(job_title_list), key=job_title_list.count)
+
     def bootstrap_resample(self, arr):
         resampled_means = pd.Series([arr.sample(3).mean() for i in range(0,1000)], name = 'salaries')
         bootstrapped_salaries = arr.append(resampled_means,ignore_index = True)
@@ -79,7 +83,7 @@ class linkedin_job_search(Linkedin):
         else:
             print("The null hypothesis cannot be rejected")
 
-    def build_distribution(self, job_title_code, days, use_normal=False, bootstrap=True, update_table=False, col_adj_city='New York, NY, United States', col_with_rent=True):
+    def build_distribution(self, job_title_code, days, use_normal=False, bootstrap=True, update_table=False, col_adj_city='New York, NY, United States', col_with_rent=True, max=None):
 
         # GET a profile
         print('Gathering Job Postings')
@@ -89,8 +93,9 @@ class linkedin_job_search(Linkedin):
             location_name = 'New York City Metropolitan Area',
             listed_at = 24 * 60 * 60 * days,
         )
+        common_title =  self.extract_job_title(job_searches)
         num_jobs = len(job_searches)
-        print(num_jobs, "jobs found. Approximately", num_jobs*3.5, "seconds to extract job descriptions.")
+        print(num_jobs, "jobs found. Approximately", num_jobs*4, "seconds to extract job descriptions.")
 
         job_desc_list = self.get_linkedin_job_desc(job_searches)
         flattened_salaries = self.extract_salaries(job_desc_list)
@@ -100,13 +105,13 @@ class linkedin_job_search(Linkedin):
         # self.test_normality(flattened_salaries)
 
         salaries_no_outliers = self.outlier_removal(flattened_salaries, how='tukey')
-        salaries_no_outliers.plot.hist(alpha=0.5)
 
         if bootstrap:
             print('Bootstrapping')
             try:
                 resampled_means = self.bootstrap_resample(salaries_no_outliers)
                 salaries_no_outliers = salaries_no_outliers.append(resampled_means,ignore_index = True)
+                salaries_no_outliers = self.outlier_removal(salaries_no_outliers, how='tukey')
             except ValueError:
                 print('Not enough salaries to initiate bootstrap. Try increasing the number of days.')
 
@@ -122,4 +127,4 @@ class linkedin_job_search(Linkedin):
         print('Creating Visuals')
         salaries_no_outliers.plot.hist(alpha=0.5, title = 'Salary Distribution (Source: LinkedIn)')
 
-        return True
+        return salaries_no_outliers, common_title
