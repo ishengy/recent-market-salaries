@@ -33,7 +33,7 @@ def main(job_title_code):
     email = os.environ.get('email')
     password = os.environ.get('password')
     api = ljs.linkedin_job_search(email, password)
-    df, common_title = api.build_distribution(job_title_code=job_title_code, days=2)
+    df, common_title = api.build_distribution(job_title_code=job_title_code, days=30)
     mu, sigma = df.mean(), df.std()
     append_to_csv(common_title, job_title_code, mu, sigma)
 
