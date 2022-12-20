@@ -68,6 +68,9 @@ def get_plot():
         fill_y = stats.norm.pdf(fill_x, mu, sigma)
 
         plt.fill_between(fill_x, fill_y, color='g')
+        plt.title('Salary Distribution (Source: LinkedIn)')
+        plt.ylabel('Density')
+        plt.xlabel('Salary')
         plt.savefig('static/my_plot.png')
         plt.close()
 
