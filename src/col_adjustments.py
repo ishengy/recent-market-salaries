@@ -26,7 +26,7 @@ class col_adjustments:
             soup = BeautifulSoup(response.text, 'html.parser')
             col_table = soup.find('table',{'class':'stripe'})
             df = pd.read_html(str(col_table))[0].drop(columns = 'Rank')
-            df.to_csv("data/numbeo_col.csv")
+            df.to_csv("data/numbeo_col.csv", index=False)
             msg = "COL Table Updated"
         else:
             msg = "COL Table Not Updated."
