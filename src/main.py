@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-def append_to_csv(job_title, job_title_code, mu, sigma, a, n, norm):
+def append_to_csv(job_title, job_title_code, mu, sigma, a, n, norm, experience):
     new_dict = dict(
         job_title = job_title,
         job_title_code = int(job_title_code),
@@ -22,6 +22,7 @@ def append_to_csv(job_title, job_title_code, mu, sigma, a, n, norm):
         shape = a,
         normal_dist = norm,
         num_salary = n,
+        experience = ', '.join(experience),
     )
     new_data = pd.DataFrame(new_dict, index=[0])
 
@@ -62,11 +63,11 @@ def main(job_title_code, limit=-1, experience=None):
     normality = True
     if a != 0:
         normality = False
-    append_to_csv(common_title, job_title_code, mu, sigma, a, n, normality)
+    append_to_csv(common_title, job_title_code, mu, sigma, a, n, normality, experience)
 
     return df
 
 
 if __name__ == "__main__":
-    main(job_title_code='27', limit=450, experience=['2', '3'])
+    main(job_title_code='194', limit=450, experience=['2', '3'])
     # 33, 595, 4201, 2463, 29, 194
