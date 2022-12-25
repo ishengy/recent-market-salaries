@@ -76,14 +76,24 @@ class linkedin_job_search(Linkedin):
         bootstrapped_salaries = arr.append(resampled_means,ignore_index = True)
         return bootstrapped_salaries
 
-    def test_normality(self, observed_data, alpha = 1e-3):
+    def test_normality(self, observed_data, alpha=1e-3):
         chi_square_test_statistic, p_value = stats.normaltest(observed_data)
-        if p_value < alpha:  # null hypothesis: x comes from a normal distribution
-            print("The null hypothesis can be rejected")
+        # null hypothesis: x comes from a normal distribution
+        if p_value < alpha:
+            # reject null hypothesis
+            return False
         else:
-            print("The null hypothesis cannot be rejected")
+            # can't reject null hypothesis
+            return True
 
-    def build_distribution(self, job_title_code, days, use_normal=False, bootstrap=True, update_table=False, col_adj_city='New York, NY, United States', col_with_rent=True, max=None):
+    def kde_estimate(self, salaries, bw_method):
+        xmin, xmax = min(salaries), max(salaries)
+        x = np.linspace(xmin, xmax, 100)
+        kernel = stats.gaussian_kde(salaries, bw_method=bw_method)
+        kde = kernel(x)
+        return kde
+
+    def build_distribution(self, job_title_code, days, use_normal=False, bootstrap=True, update_table=False, col_adj_city='New York, NY, United States', col_with_rent=True, limit=-1, experience=None):
 
         # GET a profile
         print('Gathering Job Postings')
@@ -92,6 +102,8 @@ class linkedin_job_search(Linkedin):
             job_type=['F'],
             location_name = 'New York City Metropolitan Area',
             listed_at = 24 * 60 * 60 * days,
+            limit = limit,
+            experience=['2', '3'],
         )
         common_title =  self.extract_job_title(job_searches)
         num_jobs = len(job_searches)
@@ -100,11 +112,8 @@ class linkedin_job_search(Linkedin):
         job_desc_list = self.get_linkedin_job_desc(job_searches)
         flattened_salaries = self.extract_salaries(job_desc_list)
 
-        # if normal, maybe just grab mean+std and build out normal distribution.
-        # if not, bootstrap?
-        # self.test_normality(flattened_salaries)
-
         salaries_no_outliers = self.outlier_removal(flattened_salaries, how='tukey')
+        n = len(salaries_no_outliers)
 
         if bootstrap:
             print('Bootstrapping')
@@ -127,4 +136,9 @@ class linkedin_job_search(Linkedin):
         print('Creating Visuals')
         salaries_no_outliers.plot.hist(alpha=0.5, title = 'Salary Distribution (Source: LinkedIn)')
 
-        return salaries_no_outliers, common_title
+        if self.test_normality(flattened_salaries):
+            a, mu, sigma = 0, salaries_no_outliers.mean(), salaries_no_outliers.std()
+        else:
+            a, mu, sigma = stats.skewnorm.fit(salaries_no_outliers)
+
+        return salaries_no_outliers, common_title, a, mu, sigma, n
