@@ -59,17 +59,24 @@ def get_plot():
 
         data_row = test_df[test_df.job_title == job_titles]
 
-        mu = round(data_row.avg.values[0])
-        sigma = round(data_row.std_dev.values[0])
+        mu = data_row.avg.values[0]
+        sigma = data_row.std_dev.values[0]
 
         # if not norm - replace bottom with skewnorm
-        percentile = stats.norm(mu, sigma).cdf(int(curr_salary))
-
-        x = np.linspace(mu - 3*sigma, mu + 3*sigma, 100)
-        plt.plot(x, stats.norm.pdf(x, mu, sigma))
-
-        fill_x = np.arange(x[0], int(curr_salary), 10)
-        fill_y = stats.norm.pdf(fill_x, mu, sigma)
+        if data_row.normal_dist.values[0]:
+            x = np.linspace(mu - 3*sigma, mu + 3*sigma, 100)
+            fill_x = np.arange(min(x), int(curr_salary), 10)
+            percentile = stats.norm(mu, sigma).cdf(int(curr_salary))
+            plt.plot(x, stats.norm.pdf(x, mu, sigma))
+            fill_y = stats.norm.pdf(fill_x, mu, sigma)
+        else:
+            # this doesnt work for skewnorm - figure something out lmao
+            x = np.linspace(mu - 1.5*sigma, mu + 3.5*sigma, 100)
+            fill_x = np.arange(min(x), int(curr_salary), 10)
+            ae = data_row['shape'].values[0]
+            percentile = stats.skewnorm(ae, mu, sigma).cdf(int(curr_salary))
+            plt.plot(x, stats.skewnorm.pdf(x, ae, mu, sigma))
+            fill_y = stats.skewnorm.pdf(fill_x, ae, mu, sigma)
 
         plt.fill_between(fill_x, fill_y, color='g')
         plt.title('Salary Distribution (Source: LinkedIn)')
@@ -78,8 +85,8 @@ def get_plot():
         plt.savefig('static/my_plot.png')
         plt.close()
 
-        output_mean = ('The mean salary is $' + str(mu))
-        output_std = ('The standard deviation is $' + str(sigma))
+        output_mean = ('The mean salary is $' + str(round(mu)))
+        output_std = ('The standard deviation is $' + str(round(sigma)))
         output_compare = ('This means that your salary falls in the ' + str(ceil(percentile*100)) + 'th percentile.')
         return render_template(
             'index.html',
