@@ -69,5 +69,5 @@ def main(job_title_code, limit=-1, experience=None):
 
 
 if __name__ == "__main__":
-    main(job_title_code='194', limit=450, experience=['2', '3'])
-    # 33, 595, 4201, 2463, 29, 194
+    main(job_title_code='188', limit=450, experience=['2', '3'])
+    # 33, 595, 4201, 2463, 29, 194, 1422, 188, 757 [senior art dr - need to increase exp], 90 [art dr], 977 [product designer]

@@ -25,7 +25,7 @@ class col_adjustments:
         if status_code == 200:
             soup = BeautifulSoup(response.text, 'html.parser')
             col_table = soup.find('table',{'class':'stripe'})
-            df = pd.read_html(str(col_table))[0].drop(columns = 'Rank')
+            df = pd.read_html(str(col_table))[0].drop(columns = 'Rank').sort_values('City')
             df.to_csv("data/numbeo_col.csv", index=False)
             msg = "COL Table Updated"
         else:
