@@ -6,7 +6,6 @@ Created on Sat Dec 17 02:17:06 2022
 @author: isheng
 """
 
-import os
 from flask import Flask, render_template
 from flask import request
 import matplotlib.pyplot as plt
@@ -14,17 +13,11 @@ import numpy as np
 import scipy.stats as stats
 from math import ceil
 import pandas as pd
-import col_adjustments as ca
 
 import matplotlib
 matplotlib.use('Agg')
 
-from dotenv import load_dotenv
-load_dotenv()
-
 app = Flask(__name__)
-app.config['TEMPLATES_AUTO_RELOAD'] = True
-app.config['TESTING'] = True
 
 @app.route('/')
 def hello():
@@ -59,7 +52,7 @@ def get_plot():
         curr_salary = request.form['curr_salary']
         job_titles = request.form['job']
 
-        adj_factor = col_adj[col_adj.City == location]['Cost of Living Plus Rent Index'].values[0]/100
+        adj_factor = col_adj[col_adj.City == location]['Cost of Living Index'].values[0]/100
         data_row = test_df[test_df.job_title == job_titles]
 
         mu = data_row.avg.values[0] * adj_factor
@@ -85,7 +78,7 @@ def get_plot():
         plt.title('Salary Distribution (Source: LinkedIn)')
         plt.ylabel('Density')
         plt.xlabel('Salary')
-        plt.savefig('static/my_plot.png')
+        plt.savefig('static/images/my_plot.png')
         plt.close()
 
         output_mean = ('The mean salary is $' + str(round(mu)))
@@ -94,7 +87,7 @@ def get_plot():
         return render_template(
             'index.html',
             get_plot=True,
-            plot_url='static/my_plot.png',
+            plot_url='static/images/my_plot.png',
             job_list=test_df.job_title,
             output_mean=output_mean,
             output_std=output_std,
@@ -107,8 +100,6 @@ def get_plot():
     else:
         return render_template('index.html', job_list=test_df.job_title, loc_list=col_adj.City,)
 
-
-app.secret_key = 'Stophackingme!'
 
 #Run the app on localhost port 5000
 if __name__ == "__main__":
