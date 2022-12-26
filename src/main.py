@@ -34,10 +34,10 @@ def append_to_csv(job_title, job_title_code, mu, sigma, a, n, norm, experience):
         ).reset_index(drop=True)
 
         updated_data.drop_duplicates(
-            subset='job_title_code',
+            subset=['job_title_code', 'experience'],
             keep='last',
             inplace=True
-        )
+        ).sort_values('job_title')
 
         updated_data.to_csv(
             'data/job_dist_parameters.csv',
@@ -69,5 +69,9 @@ def main(job_title_code, limit=-1, experience=None):
 
 
 if __name__ == "__main__":
-    main(job_title_code='188', limit=450, experience=['2', '3'])
-    # 33, 595, 4201, 2463, 29, 194, 1422, 188, 757 [senior art dr - need to increase exp], 90 [art dr], 977 [product designer]
+    main(
+        job_title_code='207',
+        limit=450,
+        # experience=['4']
+    )
+    # 33, 595, 4201, 2463, 29, 194, 1422, 188, 90 [art dr], 977 [product designer], 207 [senior fin analyst - need to increase exp]
