@@ -6,8 +6,6 @@ Created on Sat Dec 17 02:17:06 2022
 @author: isheng
 """
 
-import matplotlib
-matplotlib.use('Agg')
 import os
 from flask import Flask, render_template
 from flask import request
@@ -16,6 +14,11 @@ import numpy as np
 import scipy.stats as stats
 from math import ceil
 import pandas as pd
+import col_adjustments as ca
+
+import matplotlib
+matplotlib.use('Agg')
+
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -26,7 +29,8 @@ app.config['TESTING'] = True
 @app.route('/')
 def hello():
     test_df = pd.read_csv('data/job_dist_parameters.csv')
-    return render_template('index.html', job_list=test_df.job_title,)
+    col_adj = pd.read_csv('data/numbeo_col.csv')
+    return render_template('index.html', job_list=test_df.job_title, loc_list = col_adj.City)
 
 
 @app.after_request
@@ -47,20 +51,19 @@ get_plot = False
 
 @app.route('/get_plot', methods=['GET', 'POST'])
 def get_plot():
+    col_adj = pd.read_csv('data/numbeo_col.csv')
     test_df = pd.read_csv('data/job_dist_parameters.csv')
     if request.method == 'POST':
-        test_df = pd.read_csv('data/job_dist_parameters.csv')
 
         location = request.form['geo_loc']
         curr_salary = request.form['curr_salary']
         job_titles = request.form['job']
-        print(location)
-        print(job_titles)
 
+        adj_factor = col_adj[col_adj.City == location]['Cost of Living Plus Rent Index'].values[0]/100
         data_row = test_df[test_df.job_title == job_titles]
 
-        mu = data_row.avg.values[0]
-        sigma = data_row.std_dev.values[0]
+        mu = data_row.avg.values[0] * adj_factor
+        sigma = data_row.std_dev.values[0] * adj_factor
 
         # if not norm - replace bottom with skewnorm
         if data_row.normal_dist.values[0]:
@@ -96,9 +99,13 @@ def get_plot():
             output_mean=output_mean,
             output_std=output_std,
             output_compare=output_compare,
+            loc_list=col_adj.City,
+            selected_job=job_titles,
+            selected_loc=location,
+            selected_salary=curr_salary,
         )
     else:
-        return render_template('index.html', job_list=test_df.job_title,)
+        return render_template('index.html', job_list=test_df.job_title, loc_list=col_adj.City,)
 
 
 app.secret_key = 'Stophackingme!'

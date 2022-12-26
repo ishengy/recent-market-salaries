@@ -2,13 +2,27 @@
 <form id="myForm" action="/get_plot" method="POST"> 
     Job Title: <SELECT name="job">
         {% for jt in job_list %}
-            <OPTION value="{{jt}}">{{jt}}</option>
+            <OPTION 
+            value="{{jt}}"
+            {% if jt == selected_job %} selected{% endif %}>
+            {{jt}}</option>
+        {% endfor %}
+    </SELECT>
+    <br>
+    </br>
+    Location: <SELECT name="geo_loc">
+        {% for ca in loc_list %}
+            <OPTION 
+            value="{{ca}}" 
+            {% if ca == selected_loc %} selected{% endif %}>
+            {{ca}}</option>
         {% endfor %}
     </SELECT>
     </br>
-    <br> Location: <input type="text" name="geo_loc" required />
-    </br>
-    <br> Current Salary: <input type="number" name="curr_salary" required />
+    <br> 
+    Current Salary: 
+    <input 
+    type="number" name="curr_salary" value="{{ selected_salary }}" required />
     </br>
     <br>
     <input type="submit" value=OK />
