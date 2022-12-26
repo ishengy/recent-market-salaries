@@ -103,7 +103,7 @@ class linkedin_job_search(Linkedin):
             location_name = 'New York City Metropolitan Area',
             listed_at = 24 * 60 * 60 * days,
             limit = limit,
-            experience=['2', '3'],
+            experience=experience,
         )
         common_title =  self.extract_job_title(job_searches)
         num_jobs = len(job_searches)

@@ -14,6 +14,11 @@ load_dotenv()
 
 
 def append_to_csv(job_title, job_title_code, mu, sigma, a, n, norm, experience):
+    if experience is None:
+        str_exp = ''
+    else:
+        str_exp = ', '.join(experience)
+
     new_dict = dict(
         job_title = job_title,
         job_title_code = int(job_title_code),
@@ -22,7 +27,7 @@ def append_to_csv(job_title, job_title_code, mu, sigma, a, n, norm, experience):
         shape = a,
         normal_dist = norm,
         num_salary = n,
-        experience = ', '.join(experience),
+        experience = str_exp,
     )
     new_data = pd.DataFrame(new_dict, index=[0])
 
@@ -37,7 +42,9 @@ def append_to_csv(job_title, job_title_code, mu, sigma, a, n, norm, experience):
             subset=['job_title_code', 'experience'],
             keep='last',
             inplace=True
-        ).sort_values('job_title')
+        )
+
+        updated_data = updated_data.sort_values('job_title')
 
         updated_data.to_csv(
             'data/job_dist_parameters.csv',
@@ -70,7 +77,7 @@ def main(job_title_code, limit=-1, experience=None):
 
 if __name__ == "__main__":
     main(
-        job_title_code='207',
+        job_title_code='757',
         limit=450,
         # experience=['4']
     )
