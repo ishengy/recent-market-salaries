@@ -8,6 +8,7 @@ Created on Sat Dec 17 02:17:06 2022
 
 import pandas as pd
 import requests
+import numpy as np
 from bs4 import BeautifulSoup
 
 
@@ -25,7 +26,9 @@ class col_adjustments:
         if status_code == 200:
             soup = BeautifulSoup(response.text, 'html.parser')
             col_table = soup.find('table',{'class':'stripe'})
-            df = pd.read_html(str(col_table))[0].drop(columns = 'Rank').sort_values('City')
+            df = pd.read_html(str(col_table))[0].drop(columns = 'Rank')
+            df['order'] = np.where(df.City == 'New York, NY, United States', 1, 0)
+            df = df.sort_values(['order'], ascending=False)
             df.to_csv("data/numbeo_col.csv", index=False)
             msg = "COL Table Updated"
         else:
