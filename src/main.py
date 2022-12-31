@@ -15,7 +15,7 @@ load_dotenv()
 
 def append_to_csv(job_title, job_title_code, mu, sigma, a, n, norm, experience):
     if experience is None:
-        str_exp = ''
+        str_exp = '-1'
     else:
         str_exp = ', '.join(experience)
 
@@ -77,8 +77,9 @@ def main(job_title_code, limit=-1, experience=None):
 
 if __name__ == "__main__":
     main(
-        job_title_code='757',
+        job_title_code='25190',
         limit=450,
-        # experience=['4']
+        experience=['4'],
     )
-    # 33, 595, 4201, 2463, 29, 194, 1422, 188, 90 [art dr], 977 [product designer], 207 [senior fin analyst - need to increase exp]
+    # senior roles: 10331, 7797,
+    # non senior: 25201, 3114, 58
