@@ -1,0 +1,40 @@
+<html>
+    <head>
+        <title>Salary Transparency</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    </head>
+    <body>
+        <div class="form-container">
+            <h1>Salary Transparency Project</h1>
+            <form id="myForm" action="/get_plot" method="POST"> Job Title: <SELECT name="job"> {% for jt in job_list %} <OPTION value="{{jt}}" {% if jt == selected_job %} selected{% endif %}>
+                        {{jt}}
+                    </option> {% endfor %} </SELECT>
+                <br>
+                <br> Cost of Living Adjustment City: <SELECT name="geo_loc"> {% for ca in loc_list %} <OPTION value="{{ca}}" {% if ca == selected_loc %} selected{% endif %}>
+                        {{ca}}
+                    </option> {% endfor %} </SELECT>
+                <br>
+                <br> Current Salary: <input type="number" name="curr_salary" value="{{ selected_salary }}" required />
+                <br>
+                <br>
+                <input type="submit" value=OK />
+                <input type="button" onclick="reset()" value="Reset">
+            </form>
+        </div>
+        <div class="output-container">
+            <script>
+                function reset() {
+                    document.getElementById("myForm").reset();
+                }
+            </script>
+                <br>
+                <a href="https://www.numbeo.com/">Cost of Living Data obtained from Numbeo🙏</a>
+                <br>
+                <a href="https://www.buymeacoffee.com/ishengy">Buy me a coffee?☕</a>
+                <br>
+                <a href="https://www.ivansheng.com/">Check my portfolio out👀</a>
+                <br>
+            </p>
+        </div>
+    </body>
+</html>
