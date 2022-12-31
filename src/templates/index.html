@@ -10,7 +10,7 @@
                         {{jt}}
                     </option> {% endfor %} </SELECT>
                 <br>
-                <br> Location: <SELECT name="geo_loc"> {% for ca in loc_list %} <OPTION value="{{ca}}" {% if ca == selected_loc %} selected{% endif %}>
+                <br> Cost of Living Adjustment City: <SELECT name="geo_loc"> {% for ca in loc_list %} <OPTION value="{{ca}}" {% if ca == selected_loc %} selected{% endif %}>
                         {{ca}}
                     </option> {% endfor %} </SELECT>
                 <br>
@@ -19,6 +19,11 @@
                 <br>
                 <input type="submit" value=OK />
                 <input type="button" onclick="reset()" value="Reset">
+                <br>
+                <br> Experience: <SELECT name="exp"> {% for el in exp_list %} <OPTION value="{{el}}" {% if el == selected_exp %} selected{% endif %}>
+                    {{el}}
+                </option> {% endfor %} </SELECT>
+            <br>
             </form>
         </div>
         <div class="output-container">
@@ -27,7 +32,14 @@
                     document.getElementById("myForm").reset();
                 }
             </script>
+            <script type="text/javascript">
+                function showImage(elem) {
+                  document.getElementById("display-frame").src = elem.nextElementSibling.src;
+                }
+            </script>
                 {% if plot_url %} <img src={{plot_url}} alt="Chart cannot be displayed"> {% endif %} <p id="stats">
+                {{warning_msg}}
+                <br>
                 {{output_mean}}
                 <br>
                 {{output_std}}
@@ -43,5 +55,15 @@
                 <br>
             </p>
         </div>
+    </body>
+    <body style="font-family:arial, sans-serif">
+        <h1 style="background:lightblue;padding:10px">
+                Plotly Chart Demo
+        </h1>
+        
+        <p>Click to see charts on different pages</p>
+        
+        <h1><a href="chart1">Fruit in North America</a></h1>
+    
     </body>
 </html>
