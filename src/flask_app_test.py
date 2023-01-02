@@ -55,6 +55,7 @@ def get_plot():
         'experience': ['-1', '2, 3', '4', '5', '6'],
         'exp_title': ['All Experiences', 'Entry + Associate', 'Mid-Senior', 'Director', 'Executive'],
     })
+    state = False
 
     if request.method == 'POST':
 
@@ -64,14 +65,24 @@ def get_plot():
 
         job_rows = test_df[(test_df.job_title == job_titles)].sort_values('experience')
         job_rows = pd.merge(job_rows, exp_conversion, how='inner', on='experience')
+        print(job_titles)
 
+        # error here. if there is already a selection, and you change to diff job then that doesnt have exp then error
+        # ex: data scientist @ 'Entry + Associate' levels -> select media planner (it doesnt have entry + ass) -> error out
+        # fix - maybe change state after first select?
+        # initial state = False, after pressing submit set state = True?
         try:
             experience = request.form['exp']
         except:
             experience = job_rows.iloc[0].exp_title
 
+        print(experience)
         adj_factor = col_adj[col_adj.City == location]['Cost of Living Index'].values[0]/100
         data_row = job_rows[(job_rows.exp_title == experience)]
+
+        if len(data_row) == 0:
+            experience = job_rows.iloc[0].exp_title
+            data_row = job_rows[(job_rows.exp_title == experience)]
 
         mu = data_row.avg.values[0] * adj_factor
         sigma = data_row.std_dev.values[0] * adj_factor
@@ -91,7 +102,7 @@ def get_plot():
             percentile = stats.skewnorm(ae, mu, sigma).cdf(int(curr_salary))
             plt.plot(x, stats.skewnorm.pdf(x, ae, mu, sigma))
             fill_y = stats.skewnorm.pdf(fill_x, ae, mu, sigma)
-            norm_warning = 'The distribution is not normal!'
+            norm_warning = 'The distribution is not normal, so take the following with a grain of salt:'
 
         plt.fill_between(fill_x, fill_y, color='g')
         plt.title('Salary Distribution (Source: LinkedIn)')
@@ -123,6 +134,7 @@ def get_plot():
             selected_salary=curr_salary,
             selected_exp=experience,
             warning_msg=non_nyc_warning,
+            norm_warning=norm_warning,
         )
     else:
         return render_template('index.html', job_list=test_df.job_title.unique(), loc_list=col_adj.City,)

@@ -16,14 +16,14 @@
                 <br>
                 <br> Current Salary: <input type="number" name="curr_salary" value="{{ selected_salary }}" required />
                 <br>
+                <br> Experience: <SELECT name="exp"> {% for el in exp_list %} <OPTION value="{{el}}" {% if el == selected_exp %} selected{% endif %}>
+                    {{el}}
+                </option> {% endfor %} </SELECT>
+                <br>
                 <br>
                 <input type="submit" value=OK />
                 <input type="button" onclick="reset()" value="Reset">
                 <br>
-                <br> Experience: <SELECT name="exp"> {% for el in exp_list %} <OPTION value="{{el}}" {% if el == selected_exp %} selected{% endif %}>
-                    {{el}}
-                </option> {% endfor %} </SELECT>
-            <br>
             </form>
         </div>
         <div class="output-container">
@@ -40,6 +40,8 @@
                 {% if plot_url %} <img src={{plot_url}} alt="Chart cannot be displayed"> {% endif %} <p id="stats">
                 {{warning_msg}}
                 <br>
+                
+                <br>
                 {{output_mean}}
                 <br>
                 {{output_std}}
@@ -51,19 +53,9 @@
                 <br>
                 <a href="https://www.buymeacoffee.com/ishengy">Buy me a coffee?☕</a>
                 <br>
-                <a href="https://www.ivansheng.com/">Check my portfolio out👀</a>
+                <a href="https://www.ivansheng.com/">Check out my portfolio👀</a>
                 <br>
             </p>
         </div>
-    </body>
-    <body style="font-family:arial, sans-serif">
-        <h1 style="background:lightblue;padding:10px">
-                Plotly Chart Demo
-        </h1>
-        
-        <p>Click to see charts on different pages</p>
-        
-        <h1><a href="chart1">Fruit in North America</a></h1>
-    
     </body>
 </html>
