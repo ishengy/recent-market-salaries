@@ -8,7 +8,7 @@ Created on Sat Dec 17 02:17:06 2022
 
 import os
 import pandas as pd
-import linkedin_job_search as ljs
+import linkedin_salary_tools as ljs
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -77,7 +77,7 @@ def main(job_title_code, limit=-1, experience=None):
 
 if __name__ == "__main__":
     main(
-        job_title_code='25190',
+        job_title_code='9',
         limit=450,
         experience=['4'],
     )
