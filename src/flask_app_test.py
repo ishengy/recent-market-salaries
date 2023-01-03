@@ -13,15 +13,12 @@ import numpy as np
 import scipy.stats as stats
 from math import ceil
 import pandas as pd
-import plotly
-import plotly.express as px
-import plotly.graph_objects as go
-import json
 
 import matplotlib
 matplotlib.use('Agg')
 
 app = Flask(__name__)
+
 
 @app.route('/')
 def hello():
@@ -34,7 +31,7 @@ def hello():
 def add_header(r):
     """
     Add headers to both force latest IE rendering engine or Chrome Frame,
-    and also to cache the rendered page for 10 minutes.
+    and also to not cache the rendered page.
     """
     r.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
     r.headers["Pragma"] = "no-cache"
@@ -89,29 +86,34 @@ def get_plot():
 
         # if not norm - replace bottom with skewnorm
         if data_row.normal_dist.values[0]:
+            summary_stat = 'mean'
             x = np.linspace(mu - 3*sigma, mu + 3*sigma, 100)
             fill_x = np.arange(min(x), int(curr_salary), 10)
             percentile = stats.norm(mu, sigma).cdf(int(curr_salary))
-            plt.plot(x, stats.norm.pdf(x, mu, sigma))
+            y = stats.norm.pdf(x, mu, sigma)
             fill_y = stats.norm.pdf(fill_x, mu, sigma)
+            norm_warning = ''
         else:
-            # this doesnt work for skewnorm - figure something out lmao
+            # not the best approach
+            summary_stat = 'median'
             x = np.linspace(mu - 1.5*sigma, mu + 3.5*sigma, 100)
             fill_x = np.arange(min(x), int(curr_salary), 10)
             ae = data_row['shape'].values[0]
             percentile = stats.skewnorm(ae, mu, sigma).cdf(int(curr_salary))
-            plt.plot(x, stats.skewnorm.pdf(x, ae, mu, sigma))
+            y = stats.skewnorm.pdf(x, ae, mu, sigma)
             fill_y = stats.skewnorm.pdf(fill_x, ae, mu, sigma)
+            mu = stats.skewnorm(ae, mu, sigma).ppf(0.5)
             norm_warning = 'The distribution is not normal, so take the following with a grain of salt:'
 
-        plt.fill_between(fill_x, fill_y, color='g')
+        plt.plot(x, y, alpha=0.65)
+        plt.fill_between(fill_x, fill_y, alpha=0.2)
         plt.title('Salary Distribution (Source: LinkedIn)')
         plt.ylabel('Density')
         plt.xlabel('Salary')
         plt.savefig('static/images/my_plot.png')
         plt.close()
 
-        output_mean = ('The mean salary is $' + str(round(mu)))
+        output_mean = ('The ' + summary_stat + ' salary is $' + str(round(mu)))
         output_std = ('The standard deviation is $' + str(round(sigma)))
         output_compare = ('This means that your salary falls in the ' + str(ceil(percentile*100)) + 'th percentile.')
         non_nyc_warning = ''
@@ -138,54 +140,6 @@ def get_plot():
         )
     else:
         return render_template('index.html', job_list=test_df.job_title.unique(), loc_list=col_adj.City,)
-
-
-@app.route('/chart1')
-def chart1():
-    df = pd.DataFrame({
-        "Fruit": ["Apples", "Oranges", "Bananas", "Apples", "Oranges", "Bananas"],
-        "Amount": [4, 1, 2, 2, 4, 5],
-        "City": ["SF", "SF", "SF", "Montreal", "Montreal", "Montreal"]
-    })
-
-    fig = px.bar(df, x="Fruit", y="Amount", color="City", barmode="group")
-
-    """
-    refer to get_plot(), but this hsould be how we can build the dist
-    fig = px.line(x=x, y=stats.norm.pdf(x, mu, sigma), title='Life expectancy in Canada')
-    fig.add_trace(go.Scatter(
-        x=fill_x,
-        y=fill_y,
-        fill='tozeroy',
-        fillcolor='rgba(0,100,80,0.2)',
-        line_color='rgba(255,255,255,0)',
-        showlegend=False,
-        name='Fair',
-    ))
-    add filter to above
-
-    OR
-
-    just create new html, new url redirect, and render the new html that contains button or dropdown menus 
-    of differing experience levels instead of this dynamic headache shit lmao. might be easier to do this one:
-
-    @app.route('/job-exp-plots', methods=['GET', 'POST'])
-    [RETAIN FORM HTML SO IT LOOKS LIKE THE PAGE DIDNT CHANGE LOL]
-    after pressing submit, it should lead us to the next page that retains 
-    the same form, but with a new dropdown menu for the experiences.
-    the rest will function the same
-    add new html code below:
-    exp1, exp2, exp3 -> Submit
-    render graph of either 1 2 or 3
-    """
-
-    graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
-    header="Fruit in North America"
-    description = """
-    A academic study of the number of apples, oranges and bananas in the cities of
-    San Francisco and Montreal would probably not come up with this chart.
-    """
-    return render_template('notdash2.html', graphJSON=graphJSON, header=header,description=description)
 
 
 app.secret_key = 'some key that you will never guess'

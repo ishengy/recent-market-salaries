@@ -1,11 +1,11 @@
 <html>
     <head>
-        <title>Salary Transparency</title>
+        <title>Recent Market Salaries</title>
         <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     </head>
     <body>
         <div class="form-container">
-            <h1>Salary Transparency Project</h1>
+            <h1>Recent Market Salaries</h1>
             <form id="myForm" action="/get_plot" method="POST"> Job Title: <SELECT name="job"> {% for jt in job_list %} <OPTION value="{{jt}}" {% if jt == selected_job %} selected{% endif %}>
                         {{jt}}
                     </option> {% endfor %} </SELECT>
@@ -32,15 +32,10 @@
                     document.getElementById("myForm").reset();
                 }
             </script>
-            <script type="text/javascript">
-                function showImage(elem) {
-                  document.getElementById("display-frame").src = elem.nextElementSibling.src;
-                }
-            </script>
                 {% if plot_url %} <img src={{plot_url}} alt="Chart cannot be displayed"> {% endif %} <p id="stats">
-                {{warning_msg}}
+                <b>{{warning_msg}}</b>
                 <br>
-                
+                <b>{{norm_warning}}</b>
                 <br>
                 {{output_mean}}
                 <br>
