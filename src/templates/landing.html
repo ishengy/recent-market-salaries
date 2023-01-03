@@ -1,11 +1,11 @@
 <html>
     <head>
-        <title>Salary Transparency</title>
+        <title>Recent Market Salaries</title>
         <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     </head>
     <body>
         <div class="form-container">
-            <h1>Salary Transparency Project</h1>
+            <h1>Recent Market Salaries</h1>
             <form id="myForm" action="/get_plot" method="POST"> Job Title: <SELECT name="job"> {% for jt in job_list %} <OPTION value="{{jt}}" {% if jt == selected_job %} selected{% endif %}>
                         {{jt}}
                     </option> {% endfor %} </SELECT>
