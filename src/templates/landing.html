@@ -37,6 +37,15 @@
                    <td><b>Current Salary</b></td>
                    <td>Type in your current salary.</td>
                 </tr>
+
+                <tr>
+                    <td><b>Experience</b></td>
+                    <td>
+                        Select the experience level (obtained from LinkedIn filters) from the dropdownn menu. 
+                        Not all jobs will have every experience option yet.<br>
+                        <u>Note: This option only appears on the second page (after clicking "OK").</u>
+                    </td>
+                 </tr>
             </table>
             <br>
             <form id="myForm" action="/get_plot" method="POST"> Job Title: <SELECT name="job"> {% for jt in job_list %} <OPTION value="{{jt}}" {% if jt == selected_job %} selected{% endif %}>
@@ -61,13 +70,14 @@
                 }
             </script>
                 <br>
+                <a href="https://forms.gle/tzAZHUN7RzRdr1o36">Request Data🥺</a>
+                <br>
                 <a href="https://www.numbeo.com/">Cost of Living Data obtained from Numbeo🙏</a>
                 <br>
                 <a href="https://www.buymeacoffee.com/ishengy">Buy me a coffee?☕</a>
                 <br>
                 <a href="https://www.ivansheng.com/">Check my portfolio out👀</a>
                 <br>
-            </p>
         </div>
     </body>
 </html>
