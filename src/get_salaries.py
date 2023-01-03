@@ -81,5 +81,3 @@ if __name__ == "__main__":
         limit=450,
         experience=['4'],
     )
-    # senior roles: 10331, 7797,
-    # non senior: 25201, 3114, 58
