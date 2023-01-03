@@ -19,11 +19,11 @@ matplotlib.use('Agg')
 
 app = Flask(__name__)
 
+test_df = pd.read_csv('data/job_dist_parameters.csv')
+col_adj = pd.read_csv('data/numbeo_col.csv')
 
 @app.route('/')
 def hello():
-    test_df = pd.read_csv('data/job_dist_parameters.csv')
-    col_adj = pd.read_csv('data/numbeo_col.csv')
     return render_template('landing.html', job_list=test_df.job_title.unique(), loc_list = col_adj.City)
 
 
@@ -45,14 +45,10 @@ get_plot = False
 
 @app.route('/get_plot', methods=['GET', 'POST'])
 def get_plot():
-    col_adj = pd.read_csv('data/numbeo_col.csv')
-    test_df = pd.read_csv('data/job_dist_parameters.csv')
-
     exp_conversion = pd.DataFrame.from_dict({
         'experience': ['-1', '2, 3', '4', '5', '6'],
         'exp_title': ['All Experiences', 'Entry + Associate', 'Mid-Senior', 'Director', 'Executive'],
     })
-    state = False
 
     if request.method == 'POST':
 
@@ -64,10 +60,6 @@ def get_plot():
         job_rows = pd.merge(job_rows, exp_conversion, how='inner', on='experience')
         print(job_titles)
 
-        # error here. if there is already a selection, and you change to diff job then that doesnt have exp then error
-        # ex: data scientist @ 'Entry + Associate' levels -> select media planner (it doesnt have entry + ass) -> error out
-        # fix - maybe change state after first select?
-        # initial state = False, after pressing submit set state = True?
         try:
             experience = request.form['exp']
         except:
