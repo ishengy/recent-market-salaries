@@ -6,6 +6,39 @@
     <body>
         <div class="form-container">
             <h1>Recent Market Salaries</h1>
+            <div class="description">
+                <p>
+                    <span>Since November 1st 2022, NYC law mandates that salary bands are included in most job descriptions. 
+                    This makes New York City one of a handful of locations that provide this information even before 
+                    the interview stage. In an attempt to make this data even more accessible to people out looking for 
+                    a new job or negotiating a raise, I created this Flask app to display salary distributions based on
+                    job postings in the past 30-45 days.</span>
+                </p>
+            </div>
+            <table class="instructions" border-style = "solid">
+                <h2>How to Use:</h2>
+                <col width="20%">
+                <col width="80%">
+                <tr>
+                   <td><b>Job Title</b></td>
+                   <td>Select the job you want to look up from the dropdown menu.</td>
+                </tr>
+
+                <tr>
+                    <td><b>Cost of Living Adjustment City</b></td>
+                    <td>
+                        Select the city you want to scale the salaries to (via CoL Index), otherwise leave it as New York, NY. 
+                        This isn't a perfect solution to determine salary distribution in the selected area since salaries don't 
+                        necessarily correlate with the index. <u>Take it with a grain of salt.</u>
+                    </td>
+                 </tr>
+                
+                <tr>
+                   <td><b>Current Salary</b></td>
+                   <td>Type in your current salary.</td>
+                </tr>
+            </table>
+            <br>
             <form id="myForm" action="/get_plot" method="POST"> Job Title: <SELECT name="job"> {% for jt in job_list %} <OPTION value="{{jt}}" {% if jt == selected_job %} selected{% endif %}>
                         {{jt}}
                     </option> {% endfor %} </SELECT>
