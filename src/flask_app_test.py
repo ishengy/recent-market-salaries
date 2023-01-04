@@ -97,9 +97,10 @@ def get_plot():
             mu = stats.skewnorm(ae, mu, sigma).ppf(0.5)
             norm_warning = 'The distribution is not normal, so take the following with a grain of salt:'
 
+        plt.figure(figsize=(7,5))
         plt.plot(x, y, alpha=0.65)
         plt.fill_between(fill_x, fill_y, alpha=0.2)
-        plt.title('Salary Distribution (Source: LinkedIn)')
+        plt.title('Salary Distribution \n (Source: LinkedIn, Sample Size: ' + str(int(data_row.num_salary.values[0])) + ')')
         plt.ylabel('Density')
         plt.xlabel('Salary')
         plt.savefig('static/images/my_plot.png')
