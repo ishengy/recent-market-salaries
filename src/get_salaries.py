@@ -62,6 +62,7 @@ def main(job_title_code, limit=-1, experience=None):
     password = os.environ.get('password')
     api = ljs.linkedin_job_search(email, password)
     df, common_title, a, mu, sigma, n = api.build_distribution(
+        search_term=='data analyst',
         job_title_code=job_title_code,
         days=30,
         limit=limit,
@@ -77,7 +78,7 @@ def main(job_title_code, limit=-1, experience=None):
 
 if __name__ == "__main__":
     main(
-        job_title_code='9',
+        job_title_code='340',
         limit=450,
-        experience=['4'],
+        experience=['2','3'],
     )
